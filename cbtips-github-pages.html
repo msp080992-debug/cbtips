@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CBTIPS – Expert Cricket Predictions</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#00C853;--gold:#FFD700;--navy:#080C14;--card:#0E1520;--border:rgba(255,255,255,0.07)}
+body{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;background:#080C14;color:#F0F4FF;overflow-x:hidden}
+button{cursor:pointer;border:none;outline:none;font-family:inherit}
+input,textarea,select{font-family:inherit;outline:none}
+a{text-decoration:none;color:inherit}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(8,12,20,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#00C853,#00960A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.logo-text{font-size:26px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.logo-text span{color:#00C853}
+nav{display:flex;align-items:center;gap:4px}
+.nav-link{background:none;color:rgba(255,255,255,0.7);font-size:15px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:6px;transition:all 0.2s}
+.nav-link:hover,.nav-link.active{color:#00C853;background:rgba(0,200,83,0.1)}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;padding:8px}
+.hamburger span{width:24px;height:2px;background:#fff;display:block;transition:all 0.3s}
+.mobile-nav{display:none;flex-direction:column;background:#0E1520;border-bottom:1px solid var(--border);padding:16px 20px;gap:8px}
+@media(max-width:768px){nav{display:none!important}.hamburger{display:flex!important}}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* BUTTONS */
+.btn-green{background:#00C853;color:#000;font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;padding:12px 24px;border-radius:8px;transition:all 0.2s;display:inline-block}
+.btn-green:hover{background:#00E060;transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,200,83,0.4)}
+.btn-gold{background:#FFD700;color:#000;font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;padding:12px 24px;border-radius:8px;transition:all 0.2s;display:inline-block}
+.btn-gold:hover{background:#FFE44D;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,215,0,0.4)}
+.btn-ghost{background:rgba(255,255,255,0.07);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;display:inline-block}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.3)}
+
+/* CONTAINER */
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.section{padding:64px 0}
+.section-title{font-size:clamp(28px,4vw,42px);font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.section-sub{color:rgba(255,255,255,0.5);font-size:15px;font-family:'Barlow',sans-serif;margin-bottom:40px}
+.label-tag{color:#00C853;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;display:block}
+
+/* CARDS */
+.pred-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:all 0.3s}
+.pred-card:hover{border-color:rgba(0,200,83,0.4);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,200,83,0.12)}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+@media(max-width:900px){.grid-3{grid-template-columns:1fr 1fr}.grid-4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-2,.grid-3,.grid-4,.grid-auto{grid-template-columns:1fr}}
+
+/* TICKER */
+.ticker-wrap{overflow:hidden;white-space:nowrap;background:rgba(0,200,83,0.08);border-top:1px solid rgba(0,200,83,0.2);border-bottom:1px solid rgba(0,200,83,0.2);padding:10px 0}
+.ticker-inner{display:inline-block;animation:ticker 30s linear infinite}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* BADGES */
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;letter-spacing:1px;text-transform:uppercase}
+.badge-green{background:rgba(0,200,83,0.15);color:#00C853;border:1px solid rgba(0,200,83,0.2)}
+.badge-high{background:rgba(0,200,83,0.15);color:#00C853}
+.badge-medium{background:rgba(255,215,0,0.15);color:#FFD700}
+.badge-low{background:rgba(255,107,53,0.15);color:#FF6B35}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#080C14 0%,#0A1A0E 50%,#080C14 100%);padding:80px 0 60px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 70% 50%,rgba(0,200,83,0.08) 0%,transparent 70%);pointer-events:none}
+.hero-cricket{position:absolute;top:20px;right:8%;font-size:140px;opacity:0.04;line-height:1;pointer-events:none}
+.hero-title{font-size:clamp(48px,8vw,100px);font-weight:900;text-transform:uppercase;line-height:0.95;letter-spacing:-1px;margin-bottom:20px}
+.hero-title .green{color:#00C853;text-shadow:0 0 30px rgba(0,200,83,0.5)}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.3);border-radius:100px;padding:6px 16px;margin-bottom:20px}
+.live-dot{width:8px;height:8px;background:#00C853;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.live-text{font-size:12px;font-weight:700;color:#00C853;letter-spacing:2px;text-transform:uppercase}
+.hero-stats{display:flex;gap:32px;margin-top:48px;flex-wrap:wrap}
+.hero-stat-val{font-size:clamp(24px,4vw,36px);font-weight:900;color:#00C853}
+.hero-stat-lbl{font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px}
+.hero-desc{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,0.55);max-width:500px;line-height:1.6;font-family:'Barlow',sans-serif;margin-bottom:32px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+
+/* SLIDER */
+.slider-outer{position:relative;overflow:hidden;border-radius:20px;margin-bottom:20px}
+.slider-track{display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+.slide{min-width:100%;padding:0 2px}
+.slide-inner{background:linear-gradient(135deg,#0E1520,#0A1808);border:1px solid rgba(0,200,83,0.2);border-radius:20px;padding:clamp(20px,4vw,40px);display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.slide-flags{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.slide-flag{font-size:clamp(32px,5vw,60px);line-height:1}
+.slide-vs{color:rgba(255,255,255,0.3);font-size:12px;font-weight:700}
+.slide-match{font-size:clamp(18px,3vw,28px);font-weight:900;margin-bottom:8px;line-height:1.1}
+.slide-meta{color:rgba(255,255,255,0.5);font-size:13px;font-family:'Barlow',sans-serif;margin-bottom:16px}
+.slide-tip{background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.15);border-radius:10px;padding:12px 16px;margin-bottom:20px}
+.slide-tip-label{color:#FFD700;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.slide-tip-text{font-size:14px;font-family:'Barlow',sans-serif;color:rgba(255,255,255,0.8)}
+.slide-winner{font-size:clamp(16px,2.5vw,22px);font-weight:900;color:#00C853}
+.slider-dots{display:flex;justify-content:center;gap:8px;margin-bottom:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;transition:all 0.3s;cursor:pointer}
+.dot.active{background:#00C853;width:24px;border-radius:4px}
+.slider-arrows{display:flex;justify-content:center;gap:12px;margin-top:16px}
+.arrow-btn{background:rgba(255,255,255,0.07);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:10px 20px;border-radius:8px;font-weight:700;font-size:18px;cursor:pointer;transition:all 0.2s}
+.arrow-btn:hover{background:rgba(255,255,255,0.12)}
+
+/* ODDS CALC */
+.odds-box{background:var(--card);border:1px solid rgba(255,215,0,0.15);border-radius:20px;padding:clamp(20px,4vw,36px)}
+.odds-result{background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:10px;padding:16px}
+.odds-result.gold{background:rgba(255,215,0,0.07);border-color:rgba(255,215,0,0.2)}
+.odds-val{font-size:clamp(20px,3vw,28px);font-weight:900;color:#00C853}
+.odds-val.gold{color:#FFD700}
+.input-field{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);color:#fff;padding:12px 16px;border-radius:8px;width:100%;font-size:14px;transition:border 0.2s}
+.input-field:focus{border-color:#00C853;background:rgba(0,200,83,0.05)}
+.input-field::placeholder{color:rgba(255,255,255,0.3)}
+.field-label{font-size:12px;color:rgba(255,255,255,0.5);font-weight:700;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:8px}
+select.input-field option{background:#0E1520;color:#fff}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.filter-btn{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:8px 18px;border-radius:6px;transition:all 0.2s;border:1px solid rgba(255,255,255,0.07);cursor:pointer}
+.filter-btn.active{background:#00C853;color:#000;border-color:#00C853}
+.filter-btn:hover:not(.active){border-color:rgba(0,200,83,0.4);color:#00C853}
+
+/* PRED CARD DETAILS */
+.pred-meta{background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;gap:16px;font-size:12px;color:rgba(255,255,255,0.4)}
+.pred-tip-text{font-size:13px;color:rgba(255,255,255,0.6);font-family:'Barlow',sans-serif;line-height:1.5;margin-bottom:14px}
+.pred-footer{display:flex;justify-content:space-between;align-items:center}
+.pred-winner{font-size:15px;font-weight:900;color:#00C853}
+
+/* ABOUT */
+.about-hero{background:linear-gradient(135deg,rgba(0,200,83,0.08),rgba(0,200,83,0.03));border:1px solid rgba(0,200,83,0.15);border-radius:20px;padding:clamp(32px,5vw,64px);margin-bottom:48px;position:relative;overflow:hidden}
+.about-bg{position:absolute;top:-20px;right:-20px;font-size:160px;opacity:0.03;pointer-events:none}
+.about-desc{font-size:clamp(14px,2vw,17px);color:rgba(255,255,255,0.6);max-width:700px;line-height:1.7;font-family:'Barlow',sans-serif}
+.team-avatar{width:72px;height:72px;background:linear-gradient(135deg,rgba(0,200,83,0.2),rgba(0,200,83,0.05));border:2px solid rgba(0,200,83,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
+.team-role{color:#00C853;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.team-bio{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif}
+.coverage-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:clamp(24px,4vw,40px);margin-bottom:48px}
+.coverage-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.cov-tag{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600}
+
+/* TESTIMONIALS */
+.review-stars{color:#FFD700;font-size:18px;margin-bottom:12px}
+.review-text{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.6;font-family:'Barlow',sans-serif;margin-bottom:16px;font-style:italic}
+.review-name{font-weight:800;font-size:15px}
+.review-city{font-size:12px;color:rgba(255,255,255,0.4)}
+
+/* CTA BANNER */
+.cta-banner{background:linear-gradient(135deg,rgba(0,200,83,0.15),rgba(0,200,83,0.05));border-top:1px solid rgba(0,200,83,0.2);border-bottom:1px solid rgba(0,200,83,0.2);padding:48px 0;text-align:center}
+.cta-title{font-size:clamp(24px,4vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.cta-sub{color:rgba(255,255,255,0.5);margin-bottom:24px;font-family:'Barlow',sans-serif}
+
+/* CONTACT */
+.contact-info-card{display:flex;gap:14px;align-items:center}
+.contact-lbl{font-size:11px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.contact-val{font-size:15px;font-weight:700;margin-top:2px}
+.contact-tg{background:linear-gradient(135deg,rgba(0,200,83,0.12),rgba(0,200,83,0.05));border:1px solid rgba(0,200,83,0.3);border-radius:16px;padding:20px;text-align:center}
+.contact-success{text-align:center;padding:40px 0}
+
+/* FOOTER */
+footer{background:#060A10;border-top:1px solid rgba(255,255,255,0.06);padding:40px 0 24px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:32px}
+@media(max-width:700px){.footer-grid{grid-template-columns:1fr}}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.footer-desc{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6;font-family:'Barlow',sans-serif;max-width:280px}
+.footer-col-title{font-size:12px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.footer-link{display:block;background:none;color:rgba(255,255,255,0.5);font-size:14px;font-weight:600;text-align:left;padding:4px 0;cursor:pointer;transition:color 0.2s;border:none}
+.footer-link:hover{color:#00C853}
+.footer-social{display:flex;align-items:center;gap:8px;margin-bottom:8px;color:rgba(255,255,255,0.5);font-size:14px;font-weight:600}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:13px;color:rgba(255,255,255,0.3)}
+.footer-disc{font-size:12px;color:rgba(255,100,100,0.6);font-family:'Barlow',sans-serif}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#0E1520;border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:clamp(20px,4vw,36px);width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.modal-close{background:rgba(255,255,255,0.07);color:#fff;width:36px;height:36px;border-radius:8px;font-size:18px;cursor:pointer;border:1px solid rgba(255,255,255,0.1)}
+
+/* UTILS */
+.text-center{text-align:center}
+.mb-8{margin-bottom:8px}
+.mb-12{margin-bottom:12px}
+.mb-16{margin-bottom:16px}
+.mb-20{margin-bottom:20px}
+.mb-24{margin-bottom:24px}
+.mb-32{margin-bottom:32px}
+.mb-40{margin-bottom:40px}
+.mb-48{margin-bottom:48px}
+.mt-16{margin-top:16px}
+.mt-20{margin-top:20px}
+.mt-24{margin-top:24px}
+.mt-32{margin-top:32px}
+.flex{display:flex}
+.flex-wrap{flex-wrap:wrap}
+.gap-8{gap:8px}
+.gap-12{gap:12px}
+.gap-16{gap:16px}
+.gap-32{gap:32px}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.justify-center{justify-content:center}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏏</div>
+      <span class="logo-text">CB<span>TIPS</span></span>
+    </div>
+    <nav id="desktopNav">
+      <button class="nav-link active" onclick="showPage('home',this)">Home</button>
+      <button class="nav-link" onclick="showPage('predictions',this)">Predictions</button>
+      <button class="nav-link" onclick="showPage('about',this)">About Us</button>
+      <button class="nav-link" onclick="showPage('contact',this)">Contact</button>
+    </nav>
+    <button class="hamburger" onclick="toggleMobile()" id="ham"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="nav-link" onclick="showPage('home',this);closeMobile()">Home</button>
+    <button class="nav-link" onclick="showPage('predictions',this);closeMobile()">Predictions</button>
+    <button class="nav-link" onclick="showPage('about',this);closeMobile()">About Us</button>
+    <button class="nav-link" onclick="showPage('contact',this);closeMobile()">Contact</button>
+  </div>
+</header>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-cricket">🏏</div>
+    <div class="container" style="position:relative;z-index:1">
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span class="live-text">Live Predictions Available</span>
+      </div>
+      <h1 class="hero-title">
+        <span>Expert</span><br>
+        <span class="green">Cricket</span><br>
+        <span>Predictions</span>
+      </h1>
+      <p class="hero-desc">Data-driven betting tips for every cricket format globally. T20, ODI, Test, T10 — all covered with 95%+ accuracy.</p>
+      <div class="hero-btns">
+        <button class="btn-green" onclick="showPage('predictions',document.querySelectorAll('.nav-link')[1])">View Today's Tips 🏏</button>
+        <button class="btn-ghost" onclick="showPage('about',document.querySelectorAll('.nav-link')[2])">About Us</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-val">95%</div><div class="hero-stat-lbl">Win Rate</div></div>
+        <div><div class="hero-stat-val">10+</div><div class="hero-stat-lbl">Years Exp.</div></div>
+        <div><div class="hero-stat-val">5000+</div><div class="hero-stat-lbl">Members</div></div>
+        <div><div class="hero-stat-val">50+</div><div class="hero-stat-lbl">Leagues</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker"></div>
+  </div>
+
+  <!-- PREDICTION SLIDER -->
+  <section class="section" style="background:linear-gradient(180deg,#080C14,#0A1008,#080C14)">
+    <div class="container">
+      <div class="flex justify-between items-center mb-32 flex-wrap gap-16">
+        <div>
+          <span class="label-tag">🔥 Today's Picks</span>
+          <h2 class="section-title">Latest <span style="color:#00C853">Predictions</span></h2>
+        </div>
+        <button class="btn-gold" onclick="showPage('predictions',document.querySelectorAll('.nav-link')[1])">All Predictions →</button>
+      </div>
+      <div class="slider-outer">
+        <div class="slider-track" id="sliderTrack"></div>
+      </div>
+      <div class="slider-dots" id="sliderDots"></div>
+      <div class="slider-arrows">
+        <button class="arrow-btn" onclick="slideMove(-1)">‹</button>
+        <button class="arrow-btn" onclick="slideMove(1)">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ODDS CALCULATOR -->
+  <section class="section" style="background:#0B1016">
+    <div class="container">
+      <div style="max-width:720px;margin:0 auto">
+        <div class="text-center mb-32">
+          <span class="label-tag" style="color:#FFD700;justify-content:center;display:block">📊 Free Tool</span>
+          <h2 class="section-title">Odds <span style="color:#FFD700">Calculator</span></h2>
+          <p class="section-sub mb-0">Calculate your potential profit before placing a bet</p>
+        </div>
+        <div class="odds-box">
+          <div class="grid-3 mb-20">
+            <div><label class="field-label">Team A Odds</label><input class="input-field" type="number" id="oddsA" value="2.50" step="0.1" min="1" oninput="calcOdds()"></div>
+            <div><label class="field-label">Team B Odds</label><input class="input-field" type="number" id="oddsB" value="1.80" step="0.1" min="1" oninput="calcOdds()"></div>
+            <div><label class="field-label">Stake (₹)</label><input class="input-field" type="number" id="stake" value="1000" min="1" oninput="calcOdds()"></div>
+          </div>
+          <div class="grid-2 mb-16">
+            <div class="odds-result">
+              <div class="field-label" style="margin-bottom:8px">If Team A Wins</div>
+              <div class="odds-val" id="profitA">+₹1,500.00</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Total return: ₹<span id="returnA">2,500.00</span></div>
+            </div>
+            <div class="odds-result gold">
+              <div class="field-label" style="margin-bottom:8px">If Team B Wins</div>
+              <div class="odds-val gold" id="profitB">+₹800.00</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Total return: ₹<span id="returnB">1,800.00</span></div>
+            </div>
+          </div>
+          <p style="font-size:11px;color:rgba(255,255,255,0.25);text-align:center;font-family:'Barlow',sans-serif">For informational purposes only. Gamble responsibly. 18+</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CBTIPS -->
+  <section class="section">
+    <div class="container">
+      <div class="text-center mb-40">
+        <h2 class="section-title">Why Choose <span style="color:#00C853">CBTIPS?</span></h2>
+      </div>
+      <div class="grid-3">
+        <div class="pred-card"><div style="font-size:32px;margin-bottom:12px">🎯</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Expert Analysis</h3><p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif">Our team of 10+ professional analysts studies pitch, weather, form, and head-to-head stats before every prediction.</p></div>
+        <div class="pred-card"><div style="font-size:32px;margin-bottom:12px">🌍</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Global Coverage</h3><p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif">IPL, BBL, PSL, CPL, The Ashes, ICC events, and 50+ domestic leagues worldwide.</p></div>
+        <div class="pred-card"><div style="font-size:32px;margin-bottom:12px">⚡</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">All Formats</h3><p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif">Complete coverage across T20, ODI, Test, T10, and The Hundred formats.</p></div>
+        <div class="pred-card"><div style="font-size:32px;margin-bottom:12px">📊</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Data Driven</h3><p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif">Advanced statistical models combined with expert intuition for unbeatable accuracy.</p></div>
+        <div class="pred-card"><div style="font-size:32px;margin-bottom:12px">🔴</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Live Updates</h3><p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif">Real-time match updates and revised predictions as match conditions change.</p></div>
+        <div class="pred-card"><div style="font-size:32px;margin-bottom:12px">💎</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Free Tips Daily</h3><p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;font-family:'Barlow',sans-serif">Daily free predictions for all members. Premium picks for serious bettors.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section" style="background:#0B1016">
+    <div class="container">
+      <div class="text-center mb-40">
+        <h2 class="section-title">Member <span style="color:#00C853">Reviews</span></h2>
+      </div>
+      <div class="grid-3">
+        <div class="pred-card"><div class="review-stars">★★★★★</div><p class="review-text">"CBTIPS has transformed my betting! 8 wins from last 10 tips. Absolutely incredible service."</p><div class="review-name">Rahul M.</div><div class="review-city">Mumbai</div></div>
+        <div class="pred-card"><div class="review-stars">★★★★★</div><p class="review-text">"Best cricket prediction site I've used. The odds calculator alone is worth it. Highly recommend!"</p><div class="review-name">Arjun S.</div><div class="review-city">Bangalore</div></div>
+        <div class="pred-card"><div class="review-stars">★★★★★</div><p class="review-text">"Joined 3 months ago and already up 40% ROI. The IPL tips are especially spot on."</p><div class="review-name">Deepak K.</div><div class="review-city">Delhi</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-banner">
+    <div class="container">
+      <h2 class="cta-title">Join Our Telegram for <span style="color:#00C853">FREE</span> Daily Tips!</h2>
+      <p class="cta-sub">5,000+ members already getting free predictions every day</p>
+      <button class="btn-green" style="font-size:16px;padding:14px 36px">📱 Join Telegram Channel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PREDICTIONS PAGE ==================== -->
+<div id="page-predictions" class="page">
+  <section class="section">
+    <div class="container">
+      <div class="flex justify-between items-center mb-32 flex-wrap gap-16">
+        <div>
+          <span class="label-tag">🏏 Expert Picks</span>
+          <h1 class="section-title">Match <span style="color:#00C853">Predictions</span></h1>
+          <p style="color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;font-size:14px" id="predCount">8 predictions available</p>
+        </div>
+        <button class="btn-gold" onclick="document.getElementById('postModal').classList.add('open')">+ Post New Prediction</button>
+      </div>
+      <div class="filters" id="filterBtns">
+        <button class="filter-btn active" onclick="filterPreds('ALL',this)">ALL</button>
+        <button class="filter-btn" onclick="filterPreds('T20',this)">T20</button>
+        <button class="filter-btn" onclick="filterPreds('ODI',this)">ODI</button>
+        <button class="filter-btn" onclick="filterPreds('TEST',this)">TEST</button>
+        <button class="filter-btn" onclick="filterPreds('T10',this)">T10</button>
+      </div>
+      <div class="grid-auto" id="predGrid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== ABOUT PAGE ==================== -->
+<div id="page-about" class="page">
+  <section class="section">
+    <div class="container">
+      <div class="about-hero">
+        <div class="about-bg">🏏</div>
+        <span class="label-tag">Our Story</span>
+        <h1 class="section-title mb-20">About <span style="color:#00C853">CBTIPS</span></h1>
+        <p class="about-desc">Founded in 2014, CBTIPS was born from a passion for cricket and data analytics. Our team of professional analysts, data scientists, and former cricketers have spent over a decade perfecting a prediction system that consistently delivers results. We cover every major cricket format and league globally, serving over 5,000 members across 30+ countries.</p>
+      </div>
+      <div class="grid-4 mb-48">
+        <div class="stat-card"><div style="font-size:40px;font-weight:900;color:#00C853;margin-bottom:6px">95%</div><div style="font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px">Win Rate</div></div>
+        <div class="stat-card"><div style="font-size:40px;font-weight:900;color:#FFD700;margin-bottom:6px">10+</div><div style="font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px">Years Exp.</div></div>
+        <div class="stat-card"><div style="font-size:40px;font-weight:900;color:#00C853;margin-bottom:6px">5000+</div><div style="font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px">Members</div></div>
+        <div class="stat-card"><div style="font-size:40px;font-weight:900;color:#FFD700;margin-bottom:6px">50+</div><div style="font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px">Leagues</div></div>
+      </div>
+      <h2 class="section-title mb-8">Meet Our <span style="color:#00C853">Team</span></h2>
+      <p class="section-sub">The experts behind every prediction</p>
+      <div class="grid-3 mb-48">
+        <div class="pred-card text-center"><div class="team-avatar">👨‍💼</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Raj Sharma</h3><div class="team-role">Lead Cricket Analyst</div><p class="team-bio">Former first-class cricketer with 15 years of match analysis experience. Specialises in T20 and ODI formats.</p></div>
+        <div class="pred-card text-center"><div class="team-avatar">👩‍💻</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Priya Patel</h3><div class="team-role">Data Scientist</div><p class="team-bio">IIT graduate with expertise in predictive modelling. Builds the statistical models powering our 95% accuracy rate.</p></div>
+        <div class="pred-card text-center"><div class="team-avatar">👨‍🏫</div><h3 style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Mike Johnson</h3><div class="team-role">Betting Expert</div><p class="team-bio">10+ years in professional sports betting. Expert in odds movement, market analysis and value identification.</p></div>
+      </div>
+      <div class="coverage-wrap">
+        <h2 style="font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px">🌍 Global <span style="color:#00C853">Coverage</span></h2>
+        <div class="coverage-tags">
+          <span class="cov-tag">🇮🇳 IPL</span><span class="cov-tag">🇦🇺 BBL</span><span class="cov-tag">🇵🇰 PSL</span><span class="cov-tag">🌴 CPL</span>
+          <span class="cov-tag">🏴󠁧󠁢󠁥󠁮󠁧󠁿 The Hundred</span><span class="cov-tag">🏆 ICC World Cup</span><span class="cov-tag">🏆 ICC Champions Trophy</span>
+          <span class="cov-tag">⚔️ The Ashes</span><span class="cov-tag">🇿🇦 SA20</span><span class="cov-tag">🇦🇪 ILT20</span>
+          <span class="cov-tag">🇧🇩 BPL</span><span class="cov-tag">🇱🇰 LPL</span><span class="cov-tag">🇳🇿 Super Smash</span><span class="cov-tag">🌍 Africa T20</span>
+        </div>
+      </div>
+      <h2 class="section-title mb-24">Our <span style="color:#00C853">Values</span></h2>
+      <div class="grid-4">
+        <div class="pred-card text-center"><div style="font-size:32px;margin-bottom:10px">🎯</div><h3 style="font-size:16px;font-weight:800;text-transform:uppercase;margin-bottom:8px">Accuracy</h3><p style="font-size:13px;color:rgba(255,255,255,0.5);font-family:'Barlow',sans-serif;line-height:1.5">We only publish tips we believe in. No fillers, no guesses.</p></div>
+        <div class="pred-card text-center"><div style="font-size:32px;margin-bottom:10px">🔍</div><h3 style="font-size:16px;font-weight:800;text-transform:uppercase;margin-bottom:8px">Transparency</h3><p style="font-size:13px;color:rgba(255,255,255,0.5);font-family:'Barlow',sans-serif;line-height:1.5">Full reasoning behind every prediction, always.</p></div>
+        <div class="pred-card text-center"><div style="font-size:32px;margin-bottom:10px">🤝</div><h3 style="font-size:16px;font-weight:800;text-transform:uppercase;margin-bottom:8px">Responsibility</h3><p style="font-size:13px;color:rgba(255,255,255,0.5);font-family:'Barlow',sans-serif;line-height:1.5">We promote safe, responsible betting practices.</p></div>
+        <div class="pred-card text-center"><div style="font-size:32px;margin-bottom:10px">🏆</div><h3 style="font-size:16px;font-weight:800;text-transform:uppercase;margin-bottom:8px">Excellence</h3><p style="font-size:13px;color:rgba(255,255,255,0.5);font-family:'Barlow',sans-serif;line-height:1.5">Constant improvement through data and feedback.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== CONTACT PAGE ==================== -->
+<div id="page-contact" class="page">
+  <section class="section">
+    <div class="container" style="max-width:900px">
+      <div class="text-center mb-48">
+        <span class="label-tag" style="display:block">We're Here to Help</span>
+        <h1 class="section-title">Get In <span style="color:#00C853">Touch</span></h1>
+        <p style="color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif">Response within 24 hours</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="pred-card contact-info-card"><span style="font-size:24px">📧</span><div><div class="contact-lbl">Email</div><div class="contact-val">info@cbtips.com</div></div></div>
+          <div class="pred-card contact-info-card"><span style="font-size:24px">📱</span><div><div class="contact-lbl">WhatsApp</div><div class="contact-val">+91 98765 43210</div></div></div>
+          <div class="pred-card contact-info-card"><span style="font-size:24px">✈️</span><div><div class="contact-lbl">Telegram</div><div class="contact-val">@CBTIPSofficial</div></div></div>
+          <div class="pred-card contact-info-card"><span style="font-size:24px">⏱️</span><div><div class="contact-lbl">Response Time</div><div class="contact-val">Within 24 hours</div></div></div>
+          <div class="contact-tg">
+            <div style="font-size:28px;margin-bottom:8px">✈️</div>
+            <h3 style="font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Free Daily Tips</h3>
+            <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:14px;font-family:'Barlow',sans-serif">Join 5,000+ members on Telegram</p>
+            <button class="btn-green" style="width:100%">Join Telegram</button>
+          </div>
+        </div>
+        <div class="pred-card" style="padding:clamp(20px,4vw,36px)">
+          <div id="contactSuccess" style="display:none" class="contact-success">
+            <div style="font-size:48px;margin-bottom:16px">✅</div>
+            <h3 style="font-size:24px;font-weight:900;margin-bottom:8px">Message <span style="color:#00C853">Sent!</span></h3>
+            <p style="color:rgba(255,255,255,0.5);font-family:'Barlow',sans-serif">We'll get back to you within 24 hours.</p>
+            <button class="btn-green mt-20" onclick="resetContact()">Send Another</button>
+          </div>
+          <div id="contactForm">
+            <h2 style="font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:24px">Send a <span style="color:#00C853">Message</span></h2>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="grid-2">
+                <div><label class="field-label">Full Name</label><input class="input-field" id="cName" placeholder="Your name"></div>
+                <div><label class="field-label">Email</label><input class="input-field" id="cEmail" type="email" placeholder="your@email.com"></div>
+              </div>
+              <div><label class="field-label">Phone</label><input class="input-field" id="cPhone" placeholder="+91 00000 00000"></div>
+              <div>
+                <label class="field-label">Subject</label>
+                <select class="input-field" id="cSubject">
+                  <option>General Inquiry</option><option>Premium Membership</option><option>Partnership</option><option>Technical Support</option><option>Other</option>
+                </select>
+              </div>
+              <div><label class="field-label">Message</label><textarea class="input-field" id="cMessage" rows="5" placeholder="Your message..." style="resize:vertical"></textarea></div>
+              <button class="btn-green" style="font-size:15px;padding:14px;width:100%" onclick="sendContact()">Send Message →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== POST MODAL ==================== -->
+<div class="modal-overlay" id="postModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 style="font-size:24px;font-weight:900;text-transform:uppercase">Post New <span style="color:#00C853">Prediction</span></h2>
+      <button class="modal-close" onclick="document.getElementById('postModal').classList.remove('open')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="grid-column:1/-1"><label class="field-label">Match Title</label><input class="input-field" id="pMatch" placeholder="e.g. MI vs CSK"></div>
+      <div><label class="field-label">Team 1</label><input class="input-field" id="pT1" placeholder="e.g. MI"></div>
+      <div><label class="field-label">Team 2</label><input class="input-field" id="pT2" placeholder="e.g. CSK"></div>
+      <div><label class="field-label">Tournament</label><input class="input-field" id="pTournament" placeholder="e.g. IPL 2025"></div>
+      <div><label class="field-label">Format</label><select class="input-field" id="pFormat"><option>T20</option><option>ODI</option><option>TEST</option><option>T10</option><option>OTHER</option></select></div>
+      <div><label class="field-label">Date</label><input class="input-field" id="pDate" type="date"></div>
+      <div><label class="field-label">Time</label><input class="input-field" id="pTime" type="time"></div>
+      <div style="grid-column:1/-1"><label class="field-label">Confidence</label><select class="input-field" id="pConf"><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select></div>
+      <div style="grid-column:1/-1"><label class="field-label">Predicted Winner</label><input class="input-field" id="pWinner" placeholder="e.g. Mumbai Indians"></div>
+      <div style="grid-column:1/-1"><label class="field-label">Betting Tip</label><textarea class="input-field" id="pTip" rows="2" placeholder="Short tip summary..." style="resize:vertical"></textarea></div>
+      <div style="grid-column:1/-1"><label class="field-label">Full Analysis</label><textarea class="input-field" id="pAnalysis" rows="4" placeholder="Detailed match analysis..." style="resize:vertical"></textarea></div>
+    </div>
+    <div class="flex gap-12 mt-24">
+      <button class="btn-green" style="flex:1;font-size:15px;padding:14px" onclick="submitPred()">Post Prediction ✓</button>
+      <button style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.1);padding:14px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer" onclick="document.getElementById('postModal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <div class="logo-icon" style="width:34px;height:34px;font-size:18px">🏏</div>
+          <span class="logo-text" style="font-size:22px">CB<span>TIPS</span></span>
+        </div>
+        <p class="footer-desc">Expert cricket betting tips and match predictions for all formats. Trusted by 5,000+ members worldwide.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigation</div>
+        <button class="footer-link" onclick="showPage('home',document.querySelectorAll('.nav-link')[0])">Home</button>
+        <button class="footer-link" onclick="showPage('predictions',document.querySelectorAll('.nav-link')[1])">Predictions</button>
+        <button class="footer-link" onclick="showPage('about',document.querySelectorAll('.nav-link')[2])">About Us</button>
+        <button class="footer-link" onclick="showPage('contact',document.querySelectorAll('.nav-link')[3])">Contact</button>
+      </div>
+      <div>
+        <div class="footer-col-title">Connect</div>
+        <div class="footer-social"><span>✈️</span><span>Telegram</span></div>
+        <div class="footer-social"><span>📸</span><span>Instagram</span></div>
+        <div class="footer-social"><span>🐦</span><span>Twitter / X</span></div>
+        <div class="footer-social"><span>▶️</span><span>YouTube</span></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 CBTIPS. All rights reserved.</span>
+      <span class="footer-disc">⚠️ For entertainment only. Gamble responsibly. 18+ only.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===================== DATA =====================
+const predictions = [
+  {id:1,match:"Mumbai Indians vs Chennai Super Kings",team1:"MI",team2:"CSK",format:"T20",tournament:"IPL 2025",date:"Apr 23, 2025",time:"7:30 PM IST",prediction:"Mumbai Indians",confidence:"HIGH",tip:"MI's top order in brilliant form. Expect 180+ total on this surface.",flag1:"🔵",flag2:"🟡"},
+  {id:2,match:"India vs Australia",team1:"IND",team2:"AUS",format:"ODI",tournament:"ICC Champions Trophy",date:"Apr 24, 2025",time:"2:00 PM IST",prediction:"India",confidence:"HIGH",tip:"India's bowling attack has been dominant in recent ODIs. Back the hosts.",flag1:"🇮🇳",flag2:"🇦🇺"},
+  {id:3,match:"Lahore Qalandars vs Karachi Kings",team1:"LQ",team2:"KK",format:"T20",tournament:"PSL 2025",date:"Apr 24, 2025",time:"9:00 PM PKT",prediction:"Lahore Qalandars",confidence:"MEDIUM",tip:"LQ at home with full squad. Strong batting depth gives the edge.",flag1:"🟢",flag2:"⚫"},
+  {id:4,match:"Sydney Sixers vs Melbourne Stars",team1:"SYS",team2:"MLS",format:"T20",tournament:"BBL 2025",date:"Apr 25, 2025",time:"4:15 PM AEST",prediction:"Sydney Sixers",confidence:"HIGH",tip:"Sixers' spin attack will exploit the MCG conditions.",flag1:"🔴",flag2:"⭐"},
+  {id:5,match:"West Indies vs South Africa",team1:"WI",team2:"SA",format:"ODI",tournament:"WI vs SA Series",date:"Apr 26, 2025",time:"8:00 PM IST",prediction:"South Africa",confidence:"MEDIUM",tip:"SA's middle order has been exceptional. Slight edge in bowling department.",flag1:"🌴",flag2:"🇿🇦"},
+  {id:6,match:"New Zealand vs Sri Lanka",team1:"NZ",team2:"SL",format:"TEST",tournament:"Test Series 2025",date:"Apr 27, 2025",time:"4:00 AM IST",prediction:"New Zealand",confidence:"MEDIUM",tip:"NZ pacers will exploit early morning swing conditions at Eden Park.",flag1:"🇳🇿",flag2:"🇱🇰"},
+  {id:7,match:"Trinbago Knight Riders vs Barbados Royals",team1:"TKR",team2:"BR",format:"T20",tournament:"CPL 2025",date:"Apr 28, 2025",time:"3:30 AM IST",prediction:"Trinbago KR",confidence:"HIGH",tip:"TKR at home ground advantage. Their death bowling has been exceptional.",flag1:"🔴",flag2:"💜"},
+  {id:8,match:"England vs Pakistan",team1:"ENG",team2:"PAK",format:"ODI",tournament:"ENG vs PAK T20I",date:"Apr 29, 2025",time:"11:00 PM IST",prediction:"England",confidence:"LOW",tip:"England's explosive top order can dominate on flat Old Trafford pitch.",flag1:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",flag2:"🇵🇰"},
+];
+
+const confColor={HIGH:"#00C853",MEDIUM:"#FFD700",LOW:"#FF6B35"};
+const confBg={HIGH:"rgba(0,200,83,0.15)",MEDIUM:"rgba(255,215,0,0.15)",LOW:"rgba(255,107,53,0.15)"};
+
+// ===================== NAVIGATION =====================
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleMobile(){
+  const n=document.getElementById('mobileNav');
+  n.style.display=n.style.display==='flex'?'none':'flex';
+}
+function closeMobile(){document.getElementById('mobileNav').style.display='none';}
+
+// ===================== TICKER =====================
+function buildTicker(){
+  const t=document.getElementById('ticker');
+  const all=[...predictions,...predictions];
+  t.innerHTML=all.map(p=>`
+    <span style="display:inline-flex;align-items:center;gap:8px;margin-right:48px">
+      <span style="color:#00C853;font-weight:700;font-size:13px">●</span>
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.5px">${p.match}</span>
+      <span class="badge badge-${p.confidence.toLowerCase()}">${p.confidence}</span>
+      <span style="color:rgba(255,255,255,0.4);font-size:12px">→ ${p.prediction}</span>
+    </span>`).join('');
+}
+
+// ===================== SLIDER =====================
+let slideIdx=0;
+let autoTimer;
+function buildSlider(){
+  const track=document.getElementById('sliderTrack');
+  const dots=document.getElementById('sliderDots');
+  track.innerHTML=predictions.map(p=>`
+    <div class="slide">
+      <div class="slide-inner">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <span class="badge badge-green">${p.format}</span>
+            <span class="badge" style="background:${confBg[p.confidence]};color:${confColor[p.confidence]}">${p.confidence} CONFIDENCE</span>
+          </div>
+          <div class="slide-match">${p.match}</div>
+          <div class="slide-meta">${p.tournament} · ${p.date} · ${p.time}</div>
+          <div class="slide-tip mb-20">
+            <span class="slide-tip-label">Our Tip: </span>
+            <span class="slide-tip-text">${p.tip}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:13px;color:rgba(255,255,255,0.5)">Prediction:</span>
+            <span class="slide-winner">🏆 ${p.prediction}</span>
+          </div>
+        </div>
+        <div class="slide-flags">
+          <span class="slide-flag">${p.flag1}</span>
+          <span class="slide-vs">VS</span>
+          <span class="slide-flag">${p.flag2}</span>
+        </div>
+      </div>
+    </div>`).join('');
+  dots.innerHTML=predictions.map((_,i)=>`<button class="dot${i===0?' active':''}" onclick="goSlide(${i})"></button>`).join('');
+  startAuto();
+}
+function goSlide(i){
+  slideIdx=i;
+  document.getElementById('sliderTrack').style.transform=`translateX(-${i*100}%)`;
+  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active',j===i));
+}
+function slideMove(dir){
+  goSlide((slideIdx+dir+predictions.length)%predictions.length);
+  clearInterval(autoTimer);startAuto();
+}
+function startAuto(){autoTimer=setInterval(()=>slideMove(1),3500);}
+
+// ===================== ODDS CALC =====================
+function calcOdds(){
+  const a=parseFloat(document.getElementById('oddsA').value)||0;
+  const b=parseFloat(document.getElementById('oddsB').value)||0;
+  const s=parseFloat(document.getElementById('stake').value)||0;
+  const fmt=n=>n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('profitA').textContent='+₹'+fmt(s*(a-1));
+  document.getElementById('returnA').textContent=fmt(s*a);
+  document.getElementById('profitB').textContent='+₹'+fmt(s*(b-1));
+  document.getElementById('returnB').textContent=fmt(s*b);
+}
+
+// ===================== PREDICTIONS GRID =====================
+let currentFilter='ALL';
+function buildPredGrid(filter){
+  const data=filter==='ALL'?predictions:predictions.filter(p=>p.format===filter);
+  document.getElementById('predCount').textContent=`${data.length} predictions available`;
+  document.getElementById('predGrid').innerHTML=data.map(p=>`
+    <div class="pred-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span class="badge badge-green">${p.format}</span>
+        <span class="badge" style="background:${confBg[p.confidence]};color:${confColor[p.confidence]}">${p.confidence}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <span style="font-size:28px">${p.flag1}</span>
+        <div style="flex:1">
+          <div style="font-size:16px;font-weight:800;line-height:1.2">${p.match}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:3px">${p.tournament}</div>
+        </div>
+        <span style="font-size:28px">${p.flag2}</span>
+      </div>
+      <div class="pred-meta">
+        <span>📅 ${p.date}</span>
+        <span>⏰ ${p.time}</span>
+      </div>
+      <div class="pred-tip-text">${p.tip}</div>
+      <div class="pred-footer">
+        <div><span style="font-size:12px;color:rgba(255,255,255,0.4)">Winner: </span><span class="pred-winner">🏆 ${p.prediction}</span></div>
+        <button class="btn-green" style="padding:8px 14px;font-size:12px">Analysis →</button>
+      </div>
+    </div>`).join('');
+}
+function filterPreds(f, btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildPredGrid(f);
+}
+
+// ===================== CONTACT =====================
+function sendContact(){
+  const n=document.getElementById('cName').value;
+  const e=document.getElementById('cEmail').value;
+  const m=document.getElementById('cMessage').value;
+  if(!n||!e||!m){alert('Please fill in Name, Email and Message.');return;}
+  document.getElementById('contactForm').style.display='none';
+  document.getElementById('contactSuccess').style.display='block';
+}
+function resetContact(){
+  document.getElementById('contactForm').style.display='block';
+  document.getElementById('contactSuccess').style.display='none';
+  ['cName','cEmail','cPhone','cMessage'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ===================== POST PREDICTION =====================
+function submitPred(){
+  const match=document.getElementById('pMatch').value;
+  if(!match){alert('Please fill in the Match Title.');return;}
+  alert('✅ Prediction posted successfully! 🏏');
+  document.getElementById('postModal').classList.remove('open');
+  ['pMatch','pT1','pT2','pTournament','pDate','pTime','pWinner','pTip','pAnalysis'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ===================== INIT =====================
+buildTicker();
+buildSlider();
+buildPredGrid('ALL');
+calcOdds();
+</script>
+</body>
+</html>
